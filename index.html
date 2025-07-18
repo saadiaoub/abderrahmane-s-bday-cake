@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎂 Magical Birthday Cake</title>
+<style>
+  body { 
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100vh; margin:0; background: #f0e6f6; font-family: 'Comic Sans MS', sans-serif; 
+  }
+  #cake {
+    width: 200px; height: 150px;
+    background: radial-gradient(circle at 50% 20%, #4a90e2, #1a4a80);
+    border-radius: 100px / 40px; /* oval top */
+    position: relative; 
+    box-shadow: inset -8px -8px 20px rgba(255,255,255,0.3),
+                inset 8px 8px 20px rgba(0,0,0,0.2),
+                0 10px 20px rgba(0,0,0,0.4);
+    margin-bottom: 20px;
+  }
+  #frosting {
+    position: absolute; top: 0;
+    width: 100%; height: 30px;
+    background: repeating-linear-gradient(
+      -45deg, #90caf9, #90caf9 5px, #64b5f6 5px, #64b5f6 10px
+    );
+    border-radius: 100px / 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  }
+  .candle { 
+    width: 6px; height: 30px; background: #fff; 
+    position: absolute; bottom: 100%; border-radius: 2px; 
+  }
+  .flame { 
+    width: 8px; height: 8px; background: gold; 
+    border-radius: 50%; position: absolute; top: -8px; left: -1px; 
+    box-shadow: 0 0 10px gold; 
+  }
+  #linkDisplay { display: none; } /* hide the link display */
+  #message {
+    display: none; font-size: 20px; color: #333; text-align: center;
+  }
+</style>
+</head>
+<body>
+<div id="cake">
+  <div id="frosting"></div>
+</div>
+<div id="message">🧚‍♀️ The fairies have gotten your wishes 🧚‍♀️</div>
+<div id="linkDisplay"></div> <!-- hidden but keeps URL functionality -->
+<script>
+const cake = document.getElementById('cake');
+const linkDisplay = document.getElementById('linkDisplay');
+const message = document.getElementById('message');
+let candles = [];
+let blownOut = false;
+
+// Read candles from URL
+const params = new URLSearchParams(window.location.search);
+const candleStr = params.get('candles');
+if (candleStr) {
+  candles = candleStr.split(',').map(pos => parseFloat(pos));
+  drawCandles();
+}
+
+// Add candle on click
+cake.addEventListener('click', e => {
+  const rect = cake.getBoundingClientRect();
+  const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+  candles.push(xPercent);
+  blownOut = false; 
+  message.style.display = 'none';
+  updateURL();
+  drawCandles();
+});
+
+function drawCandles() {
+  cake.querySelectorAll('.candle').forEach(el => el.remove());
+  candles.forEach(x => {
+    const c = document.createElement('div');
+    c.className = 'candle';
+    c.style.left = `calc(${x}% - 3px)`;
+    if (!blownOut) {
+      const flame = document.createElement('div');
+      flame.className = 'flame';
+      c.appendChild(flame);
+    }
+    cake.appendChild(c);
+  });
+}
+
+function updateURL() {
+  const str = candles.map(x => x.toFixed(1)).join(',');
+  const newUrl = window.location.origin + window.location.pathname + '?candles=' + str;
+  window.history.replaceState({}, '', newUrl);
+}
+
+// Blow detection
+async function setupMic() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaStreamSource(stream);
+    const analyser = audioCtx.createAnalyser();
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.fftSize);
+
+    function checkVolume() {
+      analyser.getByteTimeDomainData(data);
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) {
+        sum += Math.abs(data[i] - 128);
+      }
+      const volume = sum / data.length;
+      if (volume > 10 && !blownOut) {
+        blownOut = true;
+        drawCandles();
+        message.style.display = 'block';
+      }
+      requestAnimationFrame(checkVolume);
+    }
+    checkVolume();
+  } catch (err) {
+    console.error('Mic access denied or error:', err);
+  }
+}
+setupMic();
+</script>
+</body>
+</html>
