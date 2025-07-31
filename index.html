@@ -1,40 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎂 Magical Birthday Cake</title>
-<style>
-  body { margin:0; background:#f0e6f6; overflow:hidden; font-family:'Comic Sans MS',sans-serif; }
-  #message { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    font-size:24px; color:#333; background:rgba(255,255,255,0.8); padding:10px 20px; border-radius:10px; display:none;}
-  canvas{display:block;}
-</style>
-</head>
-<body>
-<div id="message">🧚‍♀️ The fairies have gotten your wishes 🧚‍♀️</div>
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-
-let scene=new THREE.Scene(); scene.background=new THREE.Color('#f0e6f6');
-let camera=new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000); camera.position.set(0,5,10);
-let renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setSize(window.innerWidth,window.innerHeight);
-document.body.appendChild(renderer.domElement);
-let controls=new OrbitControls(camera,renderer.domElement); controls.enableDamping=true; controls.enablePan=false;
-scene.add(new THREE.AmbientLight(0xffffff,0.7)); let dirLight=new THREE.DirectionalLight(0xffffff,0.5); dirLight.position.set(5,10,7); scene.add(dirLight);
-let cake=new THREE.Mesh(new THREE.CylinderGeometry(2,2,2,64,1,true),new THREE.MeshPhongMaterial({color:0x1a4a80})); cake.position.y=1; scene.add(cake);
-let frosting=new THREE.Mesh(new THREE.TorusGeometry(2.05,0.15,16,100),new THREE.MeshPhongMaterial({color:0x90caf9})); frosting.rotation.x=Math.PI/2; frosting.position.y=2; scene.add(frosting);
-let candles=[], flames=[], blownOut=false;
-const params=new URLSearchParams(window.location.search); const candleStr=params.get('candles'); if(candleStr){candleStr.split(',').map(Number).forEach(a=>addCandle(a));}
-window.addEventListener('resize',()=>{camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight);});
-window.addEventListener('click',()=>{if(blownOut)return; let angle=Math.random()*2*Math.PI; candles.push(angle); addCandle(angle); updateURL();});
-function addCandle(angle){let x=2*Math.cos(angle),z=2*Math.sin(angle); let c=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.5,8),new THREE.MeshPhongMaterial({color:0xffffff})); c.position.set(x,2.25,z); scene.add(c); let f=new THREE.Mesh(new THREE.SphereGeometry(0.08,8,8),new THREE.MeshBasicMaterial({color:0xffaa00})); f.position.set(x,2.55,z); scene.add(f); flames.push(f);}
-function updateURL(){let str=candles.map(a=>a.toFixed(3)).join(','); window.history.replaceState({},'',window.location.origin+window.location.pathname+'?candles='+str);}
-async function setupMic(){try{const s=await navigator.mediaDevices.getUserMedia({audio:true}); const aCtx=new (window.AudioContext||window.webkitAudioContext)(); const src=aCtx.createMediaStreamSource(s); const analyser=aCtx.createAnalyser(); src.connect(analyser); const d=new Uint8Array(analyser.fftSize);
-(function check(){analyser.getByteTimeDomainData(d); let v=d.reduce((sum,i)=>sum+Math.abs(i-128),0)/d.length; if(v>10&&!blownOut){blownOut=true; flames.forEach(f=>scene.remove(f)); document.getElementById('message').style.display='block';} requestAnimationFrame(check);})();}catch(e){console.error(e);}}
-setupMic();
-(function animate(){requestAnimationFrame(animate); controls.update(); renderer.render(scene,camera);})();
-</script>
-</body>
+<html>
+  <body>
+    <h1 style="color:blue">Hello Cake Test 🎂</h1>
+  </body>
 </html>
