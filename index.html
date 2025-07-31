@@ -10,51 +10,29 @@
     height: 100vh; background: #f0e6f6; font-family: 'Comic Sans MS', sans-serif; 
   }
   #cake {
-    width: 300px; height: 180px;
+    width: 300px; height: 200px;
     background: linear-gradient(to bottom, #4a90e2, #357ab7);
-    border-radius: 0 0 40px 40px;
-    box-shadow: inset -10px -10px 20px rgba(255,255,255,0.4),
-                inset 10px 10px 20px rgba(0,0,0,0.3),
-                0 15px 20px rgba(0,0,0,0.4);
+    border-radius: 10px;
+    box-shadow: inset -8px -8px 20px rgba(255,255,255,0.3),
+                inset 8px 8px 20px rgba(0,0,0,0.2),
+                0 8px 15px rgba(0,0,0,0.4);
     position: relative; margin-bottom: 20px;
-    overflow: hidden;
   }
-  #frosting {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 40px;
-    background: linear-gradient(to bottom, #b3d9ff, #80bfff);
-    border-radius: 50%;
-    box-shadow: inset -5px -5px 10px rgba(255,255,255,0.5),
-                inset 5px 5px 10px rgba(0,0,0,0.2);
-  }
-  .candle { 
-    width: 8px; height: 30px; background: #fff; 
-    position: absolute; bottom: 100%; border-radius: 2px; 
-  }
-  .flame { 
-    width: 10px; height: 10px; background: gold; border-radius: 50%; 
-    position: absolute; top: -12px; left: -1px; 
-    box-shadow: 0 0 15px gold; 
-    animation: flicker 0.2s infinite alternate;
-  }
-  @keyframes flicker {
-    from { transform: scale(1) translateY(0px); opacity:1; }
-    to { transform: scale(1.2) translateY(-2px); opacity:0.8; }
-  }
-  #linkDisplay { display: none; } /* keep hidden */
+  .candle { width: 6px; height: 30px; background: #fff; position: absolute; bottom: 100%; border-radius: 2px; }
+  .flame { width: 8px; height: 8px; background: gold; border-radius: 50%; position: absolute; top: -8px; left: -1px; box-shadow: 0 0 10px gold; }
+  #linkDisplay { display: none; } /* hide the link display */
   #message {
     display: none; font-size: 20px; color: #333; text-align: center;
   }
 </style>
 </head>
 <body>
-<div id="cake">
-  <div id="frosting"></div>
-</div>
+<div id="cake"></div>
 <div id="message">🧚‍♀️ The fairies have gotten your wishes 🧚‍♀️</div>
-<div id="linkDisplay"></div> <!-- hidden but keeps URL functionality -->
+<div id="linkDisplay"></div> <!-- hidden but still there for code -->
 <script>
 const cake = document.getElementById('cake');
+const linkDisplay = document.getElementById('linkDisplay');
 const message = document.getElementById('message');
 let candles = [];
 let blownOut = false;
@@ -72,8 +50,8 @@ cake.addEventListener('click', e => {
   const rect = cake.getBoundingClientRect();
   const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
   candles.push(xPercent);
-  blownOut = false; 
-  message.style.display = 'none';
+  blownOut = false; // reset flames
+  message.style.display = 'none'; // hide message if new candle added
   updateURL();
   drawCandles();
 });
@@ -83,7 +61,7 @@ function drawCandles() {
   candles.forEach(x => {
     const c = document.createElement('div');
     c.className = 'candle';
-    c.style.left = `calc(${x}% - 4px)`;
+    c.style.left = `calc(${x}% - 3px)`;
     if (!blownOut) {
       const flame = document.createElement('div');
       flame.className = 'flame';
@@ -119,7 +97,7 @@ async function setupMic() {
       if (volume > 10 && !blownOut) {
         blownOut = true;
         drawCandles();
-        message.style.display = 'block';
+        message.style.display = 'block'; // show fairies message
       }
       requestAnimationFrame(checkVolume);
     }
