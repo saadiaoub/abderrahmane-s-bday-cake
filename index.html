@@ -7,19 +7,36 @@
 <style>
   body { 
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 100vh; background: #f0e6f6; font-family: 'Comic Sans MS', sans-serif; 
+    height: 100vh; margin:0; background: #f0e6f6; font-family: 'Comic Sans MS', sans-serif; 
   }
   #cake {
-    width: 300px; height: 200px;
-    background: linear-gradient(to bottom, #4a90e2, #357ab7);
-    border-radius: 10px;
+    width: 200px; height: 150px;
+    background: radial-gradient(circle at 50% 20%, #4a90e2, #1a4a80);
+    border-radius: 100px / 40px; /* oval top */
+    position: relative; 
     box-shadow: inset -8px -8px 20px rgba(255,255,255,0.3),
                 inset 8px 8px 20px rgba(0,0,0,0.2),
-                0 8px 15px rgba(0,0,0,0.4);
-    position: relative; margin-bottom: 20px;
+                0 10px 20px rgba(0,0,0,0.4);
+    margin-bottom: 20px;
   }
-  .candle { width: 6px; height: 30px; background: #fff; position: absolute; bottom: 100%; border-radius: 2px; }
-  .flame { width: 8px; height: 8px; background: gold; border-radius: 50%; position: absolute; top: -8px; left: -1px; box-shadow: 0 0 10px gold; }
+  #frosting {
+    position: absolute; top: 0;
+    width: 100%; height: 30px;
+    background: repeating-linear-gradient(
+      -45deg, #90caf9, #90caf9 5px, #64b5f6 5px, #64b5f6 10px
+    );
+    border-radius: 100px / 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  }
+  .candle { 
+    width: 6px; height: 30px; background: #fff; 
+    position: absolute; bottom: 100%; border-radius: 2px; 
+  }
+  .flame { 
+    width: 8px; height: 8px; background: gold; 
+    border-radius: 50%; position: absolute; top: -8px; left: -1px; 
+    box-shadow: 0 0 10px gold; 
+  }
   #linkDisplay { display: none; } /* hide the link display */
   #message {
     display: none; font-size: 20px; color: #333; text-align: center;
@@ -27,9 +44,11 @@
 </style>
 </head>
 <body>
-<div id="cake"></div>
+<div id="cake">
+  <div id="frosting"></div>
+</div>
 <div id="message">🧚‍♀️ The fairies have gotten your wishes 🧚‍♀️</div>
-<div id="linkDisplay"></div> <!-- hidden but still there for code -->
+<div id="linkDisplay"></div> <!-- hidden but keeps URL functionality -->
 <script>
 const cake = document.getElementById('cake');
 const linkDisplay = document.getElementById('linkDisplay');
@@ -50,8 +69,8 @@ cake.addEventListener('click', e => {
   const rect = cake.getBoundingClientRect();
   const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
   candles.push(xPercent);
-  blownOut = false; // reset flames
-  message.style.display = 'none'; // hide message if new candle added
+  blownOut = false; 
+  message.style.display = 'none';
   updateURL();
   drawCandles();
 });
@@ -97,7 +116,7 @@ async function setupMic() {
       if (volume > 10 && !blownOut) {
         blownOut = true;
         drawCandles();
-        message.style.display = 'block'; // show fairies message
+        message.style.display = 'block';
       }
       requestAnimationFrame(checkVolume);
     }
